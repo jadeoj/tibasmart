@@ -107,7 +107,7 @@ function App() {
         <section className="logo-trust section-light" aria-labelledby="trust-title">
           <div className="container trust-layout">
             <div className="trust-copy">
-              <p className="eyebrow">A better rhythm for care</p>
+              <p className="eyebrow">Our client network</p>
               <h2 id="trust-title">When every team sees the same picture, patients feel the difference.</h2>
               <p>From front desk to pharmacy, TibaSmart keeps your facility in sync — without adding more tabs, more handoffs, or more noise.</p>
               <a className="text-link" href="mailto:info@tibasmart.co.ke?subject=Talk%20to%20a%20TibaSmart%20expert">Talk to an expert <Icon name="arrow" /></a>

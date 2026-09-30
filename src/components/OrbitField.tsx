@@ -2,13 +2,16 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
 
-const orbitItems = [
-  { label: 'Care groups', short: 'CARE', tone: 'blue' },
-  { label: 'Clinic networks', short: 'CLINIC', tone: 'mint' },
-  { label: 'Diagnostic teams', short: 'LAB', tone: 'violet' },
-  { label: 'Specialist centers', short: 'SPECIAL', tone: 'orange' },
-  { label: 'Community health', short: 'AFYA', tone: 'cyan' },
-  { label: 'Multi-site care', short: 'MOSAIC', tone: 'pink' },
+const clientLogos = [
+  { name: 'Translite Pharma', src: '/assets/clients/translite-logo.jpg', tone: 'blue' },
+  { name: 'Teleflex Medical Technologies', src: '/assets/clients/teleflex-logo.jpg', tone: 'mint' },
+  { name: 'Al-Siddique Medical Centre', src: '/assets/clients/logo-name.png', tone: 'cyan' },
+  { name: 'Silvercrest Medcare Hospital', src: '/assets/clients/silvercrest-logo.jpg', tone: 'violet' },
+  { name: 'Jalad Aesthetic Clinic', src: '/assets/clients/jalad-logo.webp', tone: 'orange' },
+  { name: 'Radiance Skin Center', src: '/assets/clients/radiance-logo.png', tone: 'pink' },
+  { name: "St. Jude's Hospital", src: '/assets/clients/st-jude-logo.jpg', tone: 'blue' },
+  { name: 'Velma Memorial Medical Centre', src: '/assets/clients/velma-logo.jpg', tone: 'mint' },
+  { name: 'Uzair Pharmacy', src: '/assets/clients/uzair-logo.jpg', tone: 'cyan' },
 ]
 
 function OrbitField() {
@@ -30,7 +33,7 @@ function OrbitField() {
 
     const labels = new CSS2DRenderer()
     labels.domElement.className = 'orbit-label-layer'
-    labels.domElement.setAttribute('aria-label', 'Customer and partner network orbit')
+    labels.domElement.setAttribute('aria-label', 'TibaSmart client logo orbit')
     mount.appendChild(labels.domElement)
 
     const orbit = new THREE.Group()
@@ -63,20 +66,21 @@ function OrbitField() {
     let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const setPaused = (next: boolean) => { paused = next }
 
-    orbitItems.forEach((item, index) => {
-      const angle = (index / orbitItems.length) * Math.PI * 2
+    clientLogos.forEach((client, index) => {
+      const angle = (index / clientLogos.length) * Math.PI * 2
       const node = new THREE.Group()
       node.position.set(Math.cos(angle) * 4.15, Math.sin(angle) * 2.05, Math.sin(angle) * 1.75)
       orbit.add(node)
 
-      const halo = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), new THREE.MeshBasicMaterial({ color: item.tone === 'mint' ? 0xb7f8dc : 0x5fb3ff, transparent: true, opacity: 0.9 }))
+      const halo = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), new THREE.MeshBasicMaterial({ color: client.tone === 'mint' ? 0xb7f8dc : 0x5fb3ff, transparent: true, opacity: 0.9 }))
       node.add(halo)
 
       const element = document.createElement('button')
       element.type = 'button'
-      element.className = `orbit-card orbit-card-${item.tone}`
-      element.setAttribute('aria-label', `${item.label} network`)
-      element.innerHTML = `<span class="orbit-card-mark">${item.short.slice(0, 1)}</span><span class="orbit-card-label">${item.label}</span>`
+      element.className = `orbit-card orbit-card-${client.tone}`
+      element.setAttribute('aria-label', `${client.name} client logo`)
+      element.title = client.name
+      element.innerHTML = `<span class="orbit-logo-frame"><img src="${client.src}" alt="${client.name} logo" loading="lazy" /></span>`
       element.addEventListener('mouseenter', () => setPaused(true))
       element.addEventListener('mouseleave', () => setPaused(false))
       element.addEventListener('focus', () => setPaused(true))

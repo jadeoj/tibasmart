@@ -156,7 +156,6 @@ function App() {
                 <source src="/assets/tiba-hmis-module-ad.mp4" type="video/mp4" />
                 Your browser does not support the TibaSmart HMIS product video. <a href="/assets/tiba-hmis-module-ad.mp4">Download the video</a>.
               </video>
-              <span className="video-duration">48 SEC PRODUCT TOUR</span>
             </div>
           </div>
         </section>

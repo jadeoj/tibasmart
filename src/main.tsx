@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import AdminPage from './AdminPage'
+import BookDemoPage from './BookDemoPage'
 import './styles.css'
 
 const configuredOrigin = import.meta.env.VITE_SITE_URL?.trim().replace(/\/$/, '')
@@ -19,12 +20,17 @@ if (configuredOrigin) {
 
 document.documentElement.classList.add('js-ready')
 
-const Page = window.location.pathname.replace(/\/$/, '') === '/admin' ? AdminPage : App
+const currentPath = window.location.pathname.replace(/\/$/, '')
+const Page = currentPath === '/admin' ? AdminPage : currentPath === '/book-demo' ? BookDemoPage : App
 
 if (window.location.pathname.replace(/\/$/, '') === '/admin') {
   document.title = 'TibaSmart Admin — Client Logos & Site Settings'
   const robots = document.querySelector('meta[name="robots"]')
   robots?.setAttribute('content', 'noindex,nofollow,noarchive')
+}
+
+if (currentPath === '/book-demo') {
+  document.title = 'Book a TibaSmart Demo — Healthcare Operations'
 }
 
 createRoot(document.getElementById('root')!).render(

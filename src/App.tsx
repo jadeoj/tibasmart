@@ -75,7 +75,7 @@ function App() {
             <a href="#modules" onClick={closeMobileNav}>Modules</a>
             <a href="#integrations" onClick={closeMobileNav}>Integrations</a>
             <a href="#security" onClick={closeMobileNav}>Trust & security</a>
-            <a className="nav-cta" href="mailto:info@tibasmart.co.ke?subject=Request%20a%20TibaSmart%20demo" onClick={closeMobileNav}>Book a demo <Icon name="arrow" /></a>
+            <a className="nav-cta" href="/book-demo" onClick={closeMobileNav}>Book a demo <Icon name="arrow" /></a>
           </nav>
         </div>
       </header>
@@ -91,7 +91,7 @@ function App() {
               <h1>Make every care moment <span>move better.</span></h1>
               <p className="hero-lede">One calm, intelligent layer for the clinical, financial, and administrative work behind great care.</p>
               <div className="hero-actions">
-                <a className="button button-primary" href="mailto:info@tibasmart.co.ke?subject=Request%20a%20TibaSmart%20demo">Request a free demo <Icon name="arrow" /></a>
+                <a className="button button-primary" href="/book-demo">Request a free demo <Icon name="arrow" /></a>
                 <a className="button button-ghost" href="#platform">Explore the platform <Icon name="arrow" /></a>
               </div>
               <div className="hero-proof"><span className="proof-mark"><Icon name="check" /></span><span>Built for clinics, hospitals, and multi-branch facilities.</span></div>
@@ -173,7 +173,7 @@ function App() {
           <div className="container security-layout"><div className="security-visual"><div className="security-ring ring-outer" /><div className="security-ring ring-inner" /><div className="security-lock"><Icon name="shield" /><span>Protected</span></div><span className="security-token token-a">Access control</span><span className="security-token token-b">Audit trails</span><span className="security-token token-c">Data protection</span></div><div className="security-copy"><p className="eyebrow">Trust, built in</p><h2 id="security-title">Your data is part of the care standard.</h2><p>Enterprise-grade security should feel like a quiet confidence, not a daily interruption. TibaSmart is built to protect sensitive workflows while keeping the right information available to the right people.</p><div className="security-points"><span><Icon name="check" /><b>Role-based access</b><small>Give every team member the view they need.</small></span><span><Icon name="check" /><b>Reliable by design</b><small>Keep essential operations moving when the day gets busy.</small></span><span><Icon name="check" /><b>Clear auditability</b><small>Make every important action traceable and accountable.</small></span></div></div></div>
         </section>
 
-        <section className="cta-section section-sand" aria-labelledby="cta-title"><div className="container cta-card"><div className="cta-copy"><p className="eyebrow">Ready when you are</p><h2 id="cta-title">Give your team a clearer way to care.</h2><p>See how TibaSmart can fit the way your facility already works — and where it can help you work better.</p></div><div className="cta-actions"><a className="button button-primary" href="mailto:info@tibasmart.co.ke?subject=Request%20a%20TibaSmart%20demo">Request a free demo <Icon name="arrow" /></a><a className="contact-note" href="tel:+254715696182">Or call <b>+254 715 696 182</b></a></div></div></section>
+        <section className="cta-section section-sand" aria-labelledby="cta-title"><div className="container cta-card"><div className="cta-copy"><p className="eyebrow">Ready when you are</p><h2 id="cta-title">Give your team a clearer way to care.</h2><p>See how TibaSmart can fit the way your facility already works — and where it can help you work better.</p></div><div className="cta-actions"><a className="button button-primary" href="/book-demo">Request a free demo <Icon name="arrow" /></a><a className="contact-note" href="tel:+254715696182">Or call <b>+254 715 696 182</b></a></div></div></section>
       </main>
 
       {siteSettings.assistantEnabled && assistantOpen && <Assistant onClose={() => setAssistantOpen(false)} />}

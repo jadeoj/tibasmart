@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin
 Disallow: /api/
 
-# Replace with the live canonical origin at publish time.
 Sitemap: https://tibasmart.co.ke/sitemap.xml

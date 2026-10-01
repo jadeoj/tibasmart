@@ -21,6 +21,12 @@ document.documentElement.classList.add('js-ready')
 
 const Page = window.location.pathname.replace(/\/$/, '') === '/admin' ? AdminPage : App
 
+if (window.location.pathname.replace(/\/$/, '') === '/admin') {
+  document.title = 'TibaSmart Admin — Client Logos & Site Settings'
+  const robots = document.querySelector('meta[name="robots"]')
+  robots?.setAttribute('content', 'noindex,nofollow,noarchive')
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Page />

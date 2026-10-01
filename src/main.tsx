@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import AdminPage from './AdminPage'
 import './styles.css'
 
 const configuredOrigin = import.meta.env.VITE_SITE_URL?.trim().replace(/\/$/, '')
@@ -18,8 +19,10 @@ if (configuredOrigin) {
 
 document.documentElement.classList.add('js-ready')
 
+const Page = window.location.pathname.replace(/\/$/, '') === '/admin' ? AdminPage : App
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Page />
   </StrictMode>,
 )

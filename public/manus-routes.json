@@ -1,5 +1,6 @@
 {
   "routes": [
-    { "path": "/", "title": "TibaSmart Solutions — Healthcare Operations" }
+    { "path": "/", "title": "TibaSmart Solutions — Healthcare Operations" },
+    { "path": "/admin", "title": "TibaSmart Admin — Client Logos & Site Settings" }
   ]
 }

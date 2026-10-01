@@ -16,9 +16,9 @@ const clientLogos: OrbitLogo[] = [
 
 export type OrbitLogo = { name: string; src: string; tone: string; uploaded?: boolean }
 
-type OrbitFieldProps = { uploadedLogos?: OrbitLogo[] }
+type OrbitFieldProps = { uploadedLogos?: OrbitLogo[]; orbitSpeed?: number }
 
-function OrbitField({ uploadedLogos = [] }: OrbitFieldProps) {
+function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) {
   const mountRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -118,7 +118,7 @@ function OrbitField({ uploadedLogos = [] }: OrbitFieldProps) {
       const delta = Math.min((time - lastTime) / 1000, 0.05)
       lastTime = time
       if (!paused && !reducedMotion) {
-        orbit.rotation.y += delta * 0.24
+        orbit.rotation.y += delta * orbitSpeed
         orbit.rotation.z += delta * 0.018
       }
       webgl.render(scene, camera)

@@ -104,6 +104,8 @@ h1, h2, h3 { color: inherit; letter-spacing: -.055em; }
 .text-link { display: inline-flex; align-items: center; gap: 10px; margin-top: 23px; color: var(--blue); font-size: .76rem; font-weight: 800; }
 .text-link svg { width: 15px; transition: transform .25s ease; }
 .text-link:hover svg, .text-link:focus-visible svg { transform: translateX(4px); }
+.about-map-link { display: inline-flex; margin-top: 18px; color: var(--blue); font: .64rem 'DM Mono', monospace; }
+.about-map-link:hover, .about-map-link:focus-visible { color: var(--navy); text-decoration: underline; }
 .orbit-wrap { position: relative; min-height: 445px; }
 .orbit-loading { position: absolute; inset: 10% 8%; border: 1px dashed #b9d7e4; border-radius: 50%; opacity: .8; }
 .orbit-field { position: absolute; inset: 0; min-height: 445px; }

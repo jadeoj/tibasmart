@@ -121,9 +121,10 @@ function App() {
         <section id="about" className="logo-trust section-light" aria-labelledby="trust-title">
           <div className="container trust-layout">
             <div className="trust-copy">
-              <p className="eyebrow">Our client network</p>
-              <h2 id="trust-title">When every team sees the same picture, patients feel the difference.</h2>
-              <p>From front desk to pharmacy, TibaSmart keeps your facility in sync — without adding more tabs, more handoffs, or more noise.</p>
+              <p className="eyebrow">About TibaSmart Solutions</p>
+              <h2 id="trust-title">Healthcare operations for teams that care.</h2>
+              <p>TibaSmart Solutions Limited is a Kenya healthcare technology company focused on improving medical-practice efficiency and patient quality of care. Our HMIS keeps every team in sync — from front desk to pharmacy.</p>
+              <a className="about-map-link" href="https://www.google.com/maps/search/?api=1&query=TibaSmart+Solutions+Limited+Nairobi+Kenya" target="_blank" rel="noreferrer">Find TibaSmart Solutions on Google Maps ↗</a>
               <a className="text-link" href="mailto:info@tibasmart.co.ke?subject=Talk%20to%20a%20TibaSmart%20expert">Talk to an expert <Icon name="arrow" /></a>
             </div>
             <div className="orbit-wrap"><Suspense fallback={<div className="orbit-loading" aria-label="Loading customer network visualization" />}><OrbitField uploadedLogos={uploadedLogos} orbitSpeed={siteSettings.orbitSpeed} /></Suspense></div>

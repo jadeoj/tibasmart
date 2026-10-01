@@ -4,7 +4,8 @@ This document is an internal implementation and launch guide. It is **not linked
 
 ## What is already implemented in the site
 
-- Canonical homepage: `https://tibasmart.co.ke/`
+- Temporary canonical homepage before the custom-domain move: `https://tibasmart-ehnpdsec.manus.space/`
+- Planned future canonical homepage: `https://tibasmart.co.ke/`
 - Search title and description focused on TibaSmart HMIS and Kenya
 - Open Graph and Twitter preview metadata
 - Verified Facebook and Instagram profile links in the footer and Organization `sameAs`
@@ -27,7 +28,8 @@ Use exactly the same details everywhere:
 
 - Legal/business name: `TibaSmart Solutions Limited`
 - Public brand: `TibaSmart`
-- Website: `https://tibasmart.co.ke/`
+- Temporary website: `https://tibasmart-ehnpdsec.manus.space/`
+- Future website: `https://tibasmart.co.ke/`
 - Email: `info@tibasmart.co.ke`
 - Phone: `+254 722 777 069`
 - Logo: the same crawlable logo file used by the site
@@ -36,10 +38,10 @@ If the company has a physical office, decide on the official public address, pos
 
 ### 2. Verify the website in Google Search Console
 
-1. Add a **Domain property** for `tibasmart.co.ke`.
+1. Add a **URL-prefix property** for `https://tibasmart-ehnpdsec.manus.space/` now. Add a **Domain property** for `tibasmart.co.ke` before the custom-domain migration.
 2. Verify ownership through the DNS TXT record supplied by Search Console.
-3. Inspect `https://tibasmart.co.ke/` with URL Inspection.
-4. Submit `https://tibasmart.co.ke/sitemap.xml` in the Sitemaps report.
+3. Inspect `https://tibasmart-ehnpdsec.manus.space/` with URL Inspection.
+4. Submit `https://tibasmart-ehnpdsec.manus.space/sitemap.xml` in the Sitemaps report.
 5. Request indexing for the homepage after the DNS and hosting changes are live.
 6. Monitor Page indexing, Enhancements, Manual actions, and Core Web Vitals.
 
@@ -119,7 +121,8 @@ Record whether the homepage, sitelinks, Business Profile panel, social profiles,
 Before launch:
 
 - Point DNS to the final host and use HTTPS.
-- Make `https://tibasmart.co.ke/` the only preferred public origin.
+- During the temporary phase, make `https://tibasmart-ehnpdsec.manus.space/` the only preferred public origin.
+- At migration, switch canonical, `og:url`, JSON-LD IDs, sitemap, and robots to `https://tibasmart.co.ke/` in one release, then keep the Manus URL available long enough to serve a permanent redirect if the hosting setup supports it.
 - Redirect alternate hostnames to the canonical origin.
 - Confirm `/robots.txt` and `/sitemap.xml` return HTTP 200.
 - Confirm the sitemap contains only canonical public URLs.

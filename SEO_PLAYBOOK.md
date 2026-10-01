@@ -7,6 +7,8 @@ This document is an internal implementation and launch guide. It is **not linked
 - Canonical homepage: `https://tibasmart.co.ke/`
 - Search title and description focused on TibaSmart HMIS and Kenya
 - Open Graph and Twitter preview metadata
+- Verified Facebook and Instagram profile links in the footer and Organization `sameAs`
+- A Google Maps search action in the footer and a WhatsApp click-to-chat action using the business WhatsApp number
 - `Organization`, `WebSite`, and `SoftwareApplication` JSON-LD on the homepage
 - Crawlable initial HTML with a meaningful H1, H2, and feature list before JavaScript runs
 - `robots.txt` allowing the public site while disallowing `/admin` and `/api/`
@@ -58,7 +60,13 @@ Only create or claim a profile if TibaSmart is eligible under Google’s Busines
 
 A Business Profile is not the same thing as Organization structured data. Use both when both are appropriate.
 
-### 4. Build branded entity corroboration
+### 4. Complete the Maps and social entity layer
+
+The footer now exposes the publicly discoverable Facebook page, Instagram profile, Google Maps search, and WhatsApp contact action. After hosting, make the profiles reinforce one entity rather than creating disconnected listings. Use the exact brand name, website, phone number, logo, and a short description everywhere. Link the profiles to the canonical website and link the website back to the official profiles.
+
+For Google Maps, claim and verify the official Business Profile at the real operating location. The current footer Maps link is a search link, not a verified place ID, because the project does not yet have a confirmed street address or Google Business Profile URL. Once verified, replace the search link with the official Google Maps place URL and add the profile URL to the Organization `sameAs` array. Do not add a made-up address, coordinates, opening hours, or LocalBusiness markup.
+
+### 5. Build branded entity corroboration
 
 Create or update consistent official profiles and references:
 
@@ -72,7 +80,7 @@ Create or update consistent official profiles and references:
 
 Link those profiles back to the canonical website and keep the name, URL, phone, and description consistent. Avoid low-quality directory blasts or paid links.
 
-### 5. Publish pages that support branded and non-branded discovery
+### 6. Publish pages that support branded and non-branded discovery
 
 The homepage is the entity anchor. Add public pages over time for:
 
@@ -86,7 +94,7 @@ The homepage is the entity anchor. Add public pages over time for:
 
 Each indexable page needs its own useful title, description, H1, canonical URL, internal links, and sitemap entry. Do not create thin pages only to occupy more search results.
 
-### 6. Create the sitelink-friendly information architecture
+### 7. Create the sitelink-friendly information architecture
 
 Keep important pages linked from the header or footer with descriptive labels. Use a simple hierarchy:
 
@@ -94,7 +102,7 @@ Keep important pages linked from the header or footer with descriptive labels. U
 
 Use descriptive anchor text, stable URLs, breadcrumbs on deeper pages, and one clear canonical URL per page. Sitelinks are selected by Google; they cannot be forced with a markup switch.
 
-### 7. Measure the branded takeover
+### 8. Measure the branded takeover
 
 Create a baseline on launch day and check monthly for:
 

@@ -142,6 +142,25 @@ function App() {
           </div>
         </section>
 
+        <section id="product-demo" className="product-demo section-dark" aria-labelledby="product-demo-title">
+          <div className="container product-demo-layout">
+            <div className="product-demo-copy">
+              <p className="eyebrow eyebrow-light">See TibaSmart in action</p>
+              <h2 id="product-demo-title">One HMIS. Every module in view.</h2>
+              <p>Take a quick tour of the TibaSmart HMIS dashboard and see how care, diagnostics, pharmacy, finance, and operations stay connected in one calm workspace.</p>
+              <div className="product-demo-points"><span><b>01</b> Connected modules</span><span><b>02</b> Clear operational visibility</span><span><b>03</b> Built for everyday care teams</span></div>
+              <a className="button button-light" href="#modules">Explore every module <Icon name="arrow" /></a>
+            </div>
+            <div className="product-video-shell">
+              <video className="product-video" controls preload="metadata" poster="/assets/tiba-hmis-poster.jpg" aria-label="TibaSmart HMIS product demonstration">
+                <source src="/assets/tiba-hmis-module-ad.mp4" type="video/mp4" />
+                Your browser does not support the TibaSmart HMIS product video. <a href="/assets/tiba-hmis-module-ad.mp4">Download the video</a>.
+              </video>
+              <span className="video-duration">48 SEC PRODUCT TOUR</span>
+            </div>
+          </div>
+        </section>
+
         <section id="modules" className="modules section-light" aria-labelledby="modules-title">
           <div className="container"><div className="section-heading modules-heading"><div><p className="eyebrow">One platform. Every department.</p><h2 id="modules-title">The details that keep care moving.</h2></div><p>Modular by design, so you can start where the need is greatest and grow at your own pace.</p></div><div className="module-grid">{modules.map((module, index) => <article className="module-card" key={module.title}><div className={`module-icon module-icon-${index % 3}`}><Icon name={module.icon} /></div><span className="module-index">0{index + 1}</span><h3>{module.title}</h3><p>{module.copy}</p><a href="mailto:info@tibasmart.co.ke?subject=Ask%20about%20TibaSmart%20modules" aria-label={`Learn more about ${module.title}`}>Learn more <Icon name="arrow" /></a></article>)}</div></div>
         </section>

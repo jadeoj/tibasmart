@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import Assistant from './components/Assistant'
 import type { OrbitLogo } from './components/OrbitField'
 import { readSiteSettings } from './lib/siteSettings'
@@ -47,6 +47,8 @@ function Icon({ name }: { name: IconName }) {
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [headerScrolled, setHeaderScrolled] = useState(false)
+  const [activeSection, setActiveSection] = useState('about')
   const [assistantOpen, setAssistantOpen] = useState(false)
   const siteSettings = readSiteSettings()
   const [uploadedLogos, setUploadedLogos] = useState<OrbitLogo[]>(() => {
@@ -59,9 +61,38 @@ function App() {
 
   const closeMobileNav = () => setMobileNavOpen(false)
 
+  useEffect(() => {
+    const onScroll = () => setHeaderScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('main section[id]'))
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+      if (visible?.target.id) setActiveSection(visible.target.id)
+    }, { rootMargin: '-18% 0px -58% 0px', threshold: [0.05, 0.25, 0.5] })
+    sections.forEach((section) => observer.observe(section))
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          revealObserver.unobserve(entry.target)
+        }
+      })
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
+    document.querySelectorAll('.motion-reveal').forEach((element) => revealObserver.observe(element))
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      observer.disconnect()
+      revealObserver.disconnect()
+    }
+  }, [])
+
   return (
     <div className="site-shell">
-      <header className="site-header">
+      <header className={`site-header ${headerScrolled ? 'is-scrolled' : ''}`}>
         <div className="container header-inner">
           <a className="brand" href="#top" aria-label="TibaSmart home" onClick={closeMobileNav}>
             <img src="/assets/tibasmart-logo.png" alt="TibaSmart Solutions" />
@@ -69,12 +100,12 @@ function App() {
           <button className="mobile-nav-toggle" type="button" aria-expanded={mobileNavOpen} aria-controls="main-nav" aria-label={mobileNavOpen ? 'Close navigation' : 'Open navigation'} onClick={() => setMobileNavOpen((open) => !open)}>
             <Icon name={mobileNavOpen ? 'close' : 'menu'} />
           </button>
-          <nav id="main-nav" className={`main-nav ${mobileNavOpen ? 'is-open' : ''}`} aria-label="Main navigation">
-            <a href="#about" onClick={closeMobileNav}>About</a>
-            <a href="#platform" onClick={closeMobileNav}>Platform</a>
-            <a href="#modules" onClick={closeMobileNav}>Modules</a>
-            <a href="#integrations" onClick={closeMobileNav}>Integrations</a>
-            <a href="#security" onClick={closeMobileNav}>Trust & security</a>
+            <nav id="main-nav" className={`main-nav ${mobileNavOpen ? 'is-open' : ''}`} aria-label="Main navigation">
+            <a className={activeSection === 'about' ? 'is-active' : ''} href="#about" onClick={closeMobileNav}>About</a>
+            <a className={activeSection === 'platform' ? 'is-active' : ''} href="#platform" onClick={closeMobileNav}>Platform</a>
+            <a className={activeSection === 'modules' ? 'is-active' : ''} href="#modules" onClick={closeMobileNav}>Modules</a>
+            <a className={activeSection === 'product-demo' ? 'is-active' : ''} href="#product-demo" onClick={closeMobileNav}>Product tour</a>
+            <a className={activeSection === 'security' ? 'is-active' : ''} href="#security" onClick={closeMobileNav}>Trust & security</a>
             <a className="nav-cta" href="/book-demo" onClick={closeMobileNav}>Book a demo <Icon name="arrow" /></a>
           </nav>
         </div>
@@ -118,7 +149,7 @@ function App() {
           </div>
         </section>
 
-        <section id="about" className="logo-trust section-light" aria-labelledby="trust-title">
+        <section id="about" className="logo-trust section-light motion-reveal" aria-labelledby="trust-title">
           <div className="container trust-layout">
             <div className="trust-copy">
               <p className="eyebrow">About TibaSmart Solutions</p>
@@ -131,7 +162,7 @@ function App() {
           </div>
         </section>
 
-        <section id="platform" className="platform section-sand" aria-labelledby="platform-title">
+        <section id="platform" className="platform section-sand motion-reveal" aria-labelledby="platform-title">
           <div className="container">
             <div className="section-heading platform-heading"><div><p className="eyebrow">The operating layer</p><h2 id="platform-title">Less chasing. More clarity.</h2></div><p>Everything your facility needs to make confident decisions, coordinate better, and spend more time where it matters.</p></div>
             <div className="platform-grid">
@@ -142,7 +173,7 @@ function App() {
           </div>
         </section>
 
-        <section id="product-demo" className="product-demo section-dark" aria-labelledby="product-demo-title">
+        <section id="product-demo" className="product-demo section-dark motion-reveal" aria-labelledby="product-demo-title">
           <div className="container product-demo-layout">
             <div className="product-demo-copy">
               <p className="eyebrow eyebrow-light">See TibaSmart in action</p>
@@ -160,15 +191,15 @@ function App() {
           </div>
         </section>
 
-        <section id="modules" className="modules section-light" aria-labelledby="modules-title">
+        <section id="modules" className="modules section-light motion-reveal" aria-labelledby="modules-title">
           <div className="container"><div className="section-heading modules-heading"><div><p className="eyebrow">One platform. Every department.</p><h2 id="modules-title">The details that keep care moving.</h2></div><p>Modular by design, so you can start where the need is greatest and grow at your own pace.</p></div><div className="module-grid">{modules.map((module, index) => <article className="module-card" key={module.title}><div className={`module-icon module-icon-${index % 3}`}><Icon name={module.icon} /></div><span className="module-index">0{index + 1}</span><h3>{module.title}</h3><p>{module.copy}</p><a href="mailto:info@tibasmart.co.ke?subject=Ask%20about%20TibaSmart%20modules" aria-label={`Learn more about ${module.title}`}>Learn more <Icon name="arrow" /></a></article>)}</div></div>
         </section>
 
-        <section id="integrations" className="integration-band section-dark" aria-labelledby="integrations-title">
+        <section id="integrations" className="integration-band section-dark motion-reveal" aria-labelledby="integrations-title">
           <div className="container integration-layout"><div><p className="eyebrow eyebrow-light">Smart integrations</p><h2 id="integrations-title">Connect the tools your team already trusts.</h2><p>Automate the handoffs that slow care down. Keep your operational ecosystem connected, from payment rails to patient messages.</p><a className="button button-light" href="mailto:info@tibasmart.co.ke?subject=Discuss%20TibaSmart%20integrations">Discuss integrations <Icon name="arrow" /></a></div><div className="integration-cloud">{integrations.map((item, index) => <div className={`integration-chip chip-${index}`} key={item}><span className="chip-glyph">{['M', '↗', '◌', '✦', 'K'][index]}</span>{item}</div>)}<span className="cloud-orbit cloud-orbit-a" aria-hidden="true" /><span className="cloud-orbit cloud-orbit-b" aria-hidden="true" /><span className="cloud-cross cross-a" aria-hidden="true" /><span className="cloud-cross cross-b" aria-hidden="true" /></div></div>
         </section>
 
-        <section id="security" className="security section-light" aria-labelledby="security-title">
+        <section id="security" className="security section-light motion-reveal" aria-labelledby="security-title">
           <div className="container security-layout"><div className="security-visual"><div className="security-ring ring-outer" /><div className="security-ring ring-inner" /><div className="security-lock"><Icon name="shield" /><span>Protected</span></div><span className="security-token token-a">Access control</span><span className="security-token token-b">Audit trails</span><span className="security-token token-c">Data protection</span></div><div className="security-copy"><p className="eyebrow">Trust, built in</p><h2 id="security-title">Your data is part of the care standard.</h2><p>Enterprise-grade security should feel like a quiet confidence, not a daily interruption. TibaSmart is built to protect sensitive workflows while keeping the right information available to the right people.</p><div className="security-points"><span><Icon name="check" /><b>Role-based access</b><small>Give every team member the view they need.</small></span><span><Icon name="check" /><b>Reliable by design</b><small>Keep essential operations moving when the day gets busy.</small></span><span><Icon name="check" /><b>Clear auditability</b><small>Make every important action traceable and accountable.</small></span></div></div></div>
         </section>
 

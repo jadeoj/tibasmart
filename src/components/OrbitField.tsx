@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
 
-const clientLogos = [
+const clientLogos: OrbitLogo[] = [
   { name: 'Translite Pharma', src: '/assets/clients/translite-logo.jpg', tone: 'blue' },
   { name: 'Teleflex Medical Technologies', src: '/assets/clients/teleflex-logo.jpg', tone: 'mint' },
   { name: 'Al-Siddique Medical Centre', src: '/assets/clients/logo-name.png', tone: 'cyan' },
@@ -14,7 +14,11 @@ const clientLogos = [
   { name: 'Uzair Pharmacy', src: '/assets/clients/uzair-logo.jpg', tone: 'cyan' },
 ]
 
-function OrbitField() {
+export type OrbitLogo = { name: string; src: string; tone: string; uploaded?: boolean }
+
+type OrbitFieldProps = { uploadedLogos?: OrbitLogo[] }
+
+function OrbitField({ uploadedLogos = [] }: OrbitFieldProps) {
   const mountRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -66,8 +70,9 @@ function OrbitField() {
     let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const setPaused = (next: boolean) => { paused = next }
 
-    clientLogos.forEach((client, index) => {
-      const angle = (index / clientLogos.length) * Math.PI * 2
+    const orbitLogos = [...clientLogos, ...uploadedLogos]
+    orbitLogos.forEach((client, index) => {
+      const angle = (index / orbitLogos.length) * Math.PI * 2
       const node = new THREE.Group()
       node.position.set(Math.cos(angle) * 4.15, Math.sin(angle) * 2.05, Math.sin(angle) * 1.75)
       orbit.add(node)
@@ -77,7 +82,7 @@ function OrbitField() {
 
       const element = document.createElement('button')
       element.type = 'button'
-      element.className = `orbit-card orbit-card-${client.tone}`
+      element.className = `orbit-card orbit-card-${client.tone}${client.uploaded ? ' orbit-card-uploaded' : ''}`
       element.setAttribute('aria-label', `${client.name} client logo`)
       element.title = client.name
       element.innerHTML = `<span class="orbit-logo-frame"><img src="${client.src}" alt="${client.name} logo" loading="lazy" /></span>`
@@ -135,7 +140,7 @@ function OrbitField() {
       mount.removeChild(webgl.domElement)
       mount.removeChild(labels.domElement)
     }
-  }, [])
+  }, [uploadedLogos])
 
   return <div className="orbit-field" ref={mountRef} />
 }

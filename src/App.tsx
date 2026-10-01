@@ -1,4 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
+import Assistant from './components/Assistant'
+import type { OrbitLogo } from './components/OrbitField'
 
 const OrbitField = lazy(() => import('./components/OrbitField'))
 
@@ -43,8 +45,44 @@ function Icon({ name }: { name: IconName }) {
 
 function App() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [assistantOpen, setAssistantOpen] = useState(false)
+  const [uploadedLogos, setUploadedLogos] = useState<OrbitLogo[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem('tibasmart-uploaded-logos') ?? '[]') as OrbitLogo[]
+    } catch {
+      return []
+    }
+  })
 
   const closeMobileNav = () => setMobileNavOpen(false)
+
+  const addLogo = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file || !file.type.startsWith('image/')) return
+    if (file.size > 2 * 1024 * 1024) {
+      window.alert('Please choose a logo smaller than 2 MB.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      const logo: OrbitLogo = { name: file.name.replace(/\.[^/.]+$/, ''), src: String(reader.result), tone: ['blue', 'mint', 'cyan', 'violet', 'orange', 'pink'][uploadedLogos.length % 6], uploaded: true }
+      setUploadedLogos((current) => {
+        const next = [...current, logo]
+        try { localStorage.setItem('tibasmart-uploaded-logos', JSON.stringify(next)) } catch { /* keep the current-session upload */ }
+        return next
+      })
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const removeUploadedLogo = (name: string) => {
+    setUploadedLogos((current) => {
+      const next = current.filter((logo) => logo.name !== name)
+      try { localStorage.setItem('tibasmart-uploaded-logos', JSON.stringify(next)) } catch { /* no-op */ }
+      return next
+    })
+  }
 
   return (
     <div className="site-shell">
@@ -57,6 +95,7 @@ function App() {
             <Icon name={mobileNavOpen ? 'close' : 'menu'} />
           </button>
           <nav id="main-nav" className={`main-nav ${mobileNavOpen ? 'is-open' : ''}`} aria-label="Main navigation">
+            <a href="#about" onClick={closeMobileNav}>About</a>
             <a href="#platform" onClick={closeMobileNav}>Platform</a>
             <a href="#modules" onClick={closeMobileNav}>Modules</a>
             <a href="#integrations" onClick={closeMobileNav}>Integrations</a>
@@ -104,7 +143,7 @@ function App() {
           </div>
         </section>
 
-        <section className="logo-trust section-light" aria-labelledby="trust-title">
+        <section id="about" className="logo-trust section-light" aria-labelledby="trust-title">
           <div className="container trust-layout">
             <div className="trust-copy">
               <p className="eyebrow">Our client network</p>
@@ -112,7 +151,7 @@ function App() {
               <p>From front desk to pharmacy, TibaSmart keeps your facility in sync — without adding more tabs, more handoffs, or more noise.</p>
               <a className="text-link" href="mailto:info@tibasmart.co.ke?subject=Talk%20to%20a%20TibaSmart%20expert">Talk to an expert <Icon name="arrow" /></a>
             </div>
-            <div className="orbit-wrap"><Suspense fallback={<div className="orbit-loading" aria-label="Loading customer network visualization" />}><OrbitField /></Suspense></div>
+            <div className="orbit-wrap"><Suspense fallback={<div className="orbit-loading" aria-label="Loading customer network visualization" />}><OrbitField uploadedLogos={uploadedLogos} /></Suspense><div className="logo-manager"><div><span className="logo-manager-kicker">CLIENT LOGOS / 3D ORBIT</span><b>{uploadedLogos.length ? `${uploadedLogos.length} custom logo${uploadedLogos.length > 1 ? 's' : ''} added` : 'Add your own client logo'}</b><small>PNG, JPG, SVG or WebP · max 2 MB · saved in this browser</small></div><label className="upload-logo-button"><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={addLogo} />+ Upload logo</label></div>{uploadedLogos.length > 0 && <div className="uploaded-logo-list">{uploadedLogos.map((logo) => <button type="button" key={logo.name} onClick={() => removeUploadedLogo(logo.name)} title={`Remove ${logo.name}`}>Remove {logo.name} ×</button>)}</div>}</div>
           </div>
         </section>
 
@@ -142,7 +181,9 @@ function App() {
         <section className="cta-section section-sand" aria-labelledby="cta-title"><div className="container cta-card"><div className="cta-copy"><p className="eyebrow">Ready when you are</p><h2 id="cta-title">Give your team a clearer way to care.</h2><p>See how TibaSmart can fit the way your facility already works — and where it can help you work better.</p></div><div className="cta-actions"><a className="button button-primary" href="mailto:info@tibasmart.co.ke?subject=Request%20a%20TibaSmart%20demo">Request a free demo <Icon name="arrow" /></a><a className="contact-note" href="tel:+254715696182">Or call <b>+254 715 696 182</b></a></div></div></section>
       </main>
 
-      <footer className="site-footer"><div className="container footer-top"><div className="footer-brand"><a className="brand" href="#top"><img src="/assets/tibasmart-logo.png" alt="TibaSmart Solutions" /></a><p>Healthcare operations, made clearer.</p></div><div className="footer-links"><div><span>Explore</span><a href="#platform">Platform</a><a href="#modules">Modules</a><a href="#integrations">Integrations</a></div><div><span>Connect</span><a href="mailto:info@tibasmart.co.ke">info@tibasmart.co.ke</a><a href="tel:+254722777069">+254 722 777 069</a><span>Mon – Fri · 8:00 – 17:00</span></div></div></div><div className="container footer-bottom"><span>© 2026 TibaSmart Solutions Limited</span><div><a href="#top">Privacy</a><a href="#top">Terms</a><a href="#top">Back to top ↑</a></div></div></footer>
+      {assistantOpen && <Assistant onClose={() => setAssistantOpen(false)} />}
+      <button className={`assistant-launcher ${assistantOpen ? 'is-hidden' : ''}`} type="button" onClick={() => setAssistantOpen(true)} aria-label="Open TibaSmart AI assistant"><span className="assistant-launcher-spark">✦</span><span><b>Ask TibaSmart</b><small>AI guide</small></span></button>
+      <footer className="site-footer"><div className="container footer-top"><div className="footer-brand"><a className="brand" href="#top"><img src="/assets/tibasmart-logo.png" alt="TibaSmart Solutions" /></a><p>Healthcare operations, made clearer.</p></div><div className="footer-links"><div><span>Explore</span><a href="#about">About</a><a href="#platform">Platform</a><a href="#modules">Modules</a><a href="#integrations">Integrations</a></div><div><span>Connect</span><a href="mailto:info@tibasmart.co.ke">info@tibasmart.co.ke</a><a href="tel:+254722777069">+254 722 777 069</a><span>Mon – Fri · 8:00 – 17:00</span></div></div></div><div className="container footer-bottom"><span>© 2026 TibaSmart Solutions Limited</span><div><a href="#top">Privacy</a><a href="#top">Terms</a><a href="#top">Back to top ↑</a></div></div></footer>
     </div>
   )
 }

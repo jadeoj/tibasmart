@@ -7,6 +7,8 @@ Create a responsive, static TibaSmart Solutions landing page that modernizes the
 - `src/App.tsx`: page content, navigation, sections, CTA links, and responsive semantic markup.
 - `src/components/OrbitField.tsx`: Three.js scene with a rotating perspective ring, CSS2D cards for the exact client logos currently shown on TibaSmart’s partner section, hover/focus pause, and reduced-motion handling.
 - `public/assets/clients/`: locally stored Translite Pharma, Teleflex, Al-Siddique Medical Centre, Silvercrest, Jalad, Radiance, St. Jude’s, Velma Memorial, and Uzair Pharmacy logo assets.
+- `src/components/Assistant.tsx`: bottom-right TibaSmart AI guide with common answers for demos, pricing, modules, integrations, security, and contact details.
+- Client-logo manager in the About/client-network section: image uploads are validated at 2 MB, added to the orbit immediately, removable, and persisted in the current browser with `localStorage`.
 - `src/styles.css`: design tokens, responsive layout, component styling, focus states, and motion rules.
 - `public/assets/tibasmart-logo.png`: reused TibaSmart brand mark from the current website.
 - `public/manus-routes.json`: current route manifest for the single-page site.

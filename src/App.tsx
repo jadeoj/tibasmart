@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react'
 import Assistant from './components/Assistant'
 import type { OrbitLogo } from './components/OrbitField'
 import { readSiteSettings } from './lib/siteSettings'
+import { fetchSharedConfig } from './lib/sharedConfig'
 
 const OrbitField = lazy(() => import('./components/OrbitField'))
 
@@ -50,7 +51,7 @@ function App() {
   const [headerScrolled, setHeaderScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('about')
   const [assistantOpen, setAssistantOpen] = useState(false)
-  const siteSettings = readSiteSettings()
+  const [siteSettings, setSiteSettings] = useState(readSiteSettings)
   const [uploadedLogos, setUploadedLogos] = useState<OrbitLogo[]>(() => {
     try {
       return JSON.parse(localStorage.getItem('tibasmart-uploaded-logos') ?? '[]') as OrbitLogo[]
@@ -60,6 +61,16 @@ function App() {
   })
 
   const closeMobileNav = () => setMobileNavOpen(false)
+
+  useEffect(() => {
+    fetchSharedConfig().then((config) => {
+      if (!config) return
+      setSiteSettings(config.settings)
+      setUploadedLogos(config.logos)
+      localStorage.setItem('tibasmart-uploaded-logos', JSON.stringify(config.logos))
+      localStorage.setItem('tibasmart-site-settings', JSON.stringify(config.settings))
+    })
+  }, [])
 
   useEffect(() => {
     const onScroll = () => setHeaderScrolled(window.scrollY > 24)

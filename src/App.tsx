@@ -184,7 +184,7 @@ function App() {
               <a className="button button-light" href="#modules">Explore every module <Icon name="arrow" /></a>
             </div>
             <div className="product-video-shell">
-              <video className="product-video" autoPlay loop muted playsInline preload="auto" poster="/assets/tiba-hmis-poster.jpg" aria-label="TibaSmart HMIS product demonstration" onLoadedMetadata={(event) => { event.currentTarget.playbackRate = 1.2 }}>
+              <video className="product-video" autoPlay loop muted playsInline preload="auto" poster="/assets/tiba-hmis-poster.jpg" aria-label="TibaSmart HMIS product demonstration" onLoadedMetadata={(event) => { event.currentTarget.playbackRate = 1.35 }}>
                 <source src="/assets/tiba-hmis-module-ad.mp4" type="video/mp4" />
                 Your browser does not support the TibaSmart HMIS product video. <a href="/assets/tiba-hmis-module-ad.mp4">Download the video</a>.
               </video>

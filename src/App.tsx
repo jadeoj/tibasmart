@@ -155,6 +155,7 @@ function App() {
               <p className="eyebrow">About TibaSmart Solutions</p>
               <h2 id="trust-title">Healthcare operations for teams that care.</h2>
               <p>TibaSmart Solutions Limited is a Kenya healthcare technology company focused on improving medical-practice efficiency and patient quality of care. Our HMIS keeps every team in sync — from front desk to pharmacy.</p>
+              <figure className="about-healthcare-image"><img src="/manus-storage/async-images/MLu3F9qXcgEywiP1kP7Uw2/image-1.webp" alt="Healthcare team collaborating around digital care operations" loading="lazy" /><figcaption><span className="status-pulse" /> Technology that keeps care teams in sync</figcaption></figure>
               <a className="about-map-link" href="https://www.google.com/maps/search/?api=1&query=TibaSmart+Solutions+Limited+Nairobi+Kenya" target="_blank" rel="noreferrer">Find TibaSmart Solutions on Google Maps ↗</a>
               <a className="text-link" href="mailto:info@tibasmart.co.ke?subject=Talk%20to%20a%20TibaSmart%20expert">Talk to an expert <Icon name="arrow" /></a>
             </div>

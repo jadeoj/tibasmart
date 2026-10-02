@@ -320,3 +320,6 @@ h1, h2, h3 { color: inherit; letter-spacing: -.055em; }
 .about-healthcare-image figcaption .status-pulse { flex: 0 0 auto; }
 @media (max-width: 700px) { .about-healthcare-image { margin-top: 24px; } .about-healthcare-image figcaption { font-size: .5rem; } }
 @media (prefers-reduced-motion: reduce) { .about-healthcare-image img { transition: none; } .about-healthcare-image:hover img { transform: none; } }
+/* Expanded client-logo wheel stage */
+.orbit-wrap, .orbit-field { min-height: 540px; }
+@media (max-width: 700px) { .orbit-wrap, .orbit-field { min-height: 430px; } }

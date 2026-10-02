@@ -1,10 +1,9 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import Assistant from './components/Assistant'
-import type { OrbitLogo } from './components/OrbitField'
+import OrbitField, { OrbitLogo } from './components/OrbitField'
+import ProductVideoPlayer from './components/ProductVideoPlayer'
 import { readSiteSettings } from './lib/siteSettings'
 import { fetchSharedConfig } from './lib/sharedConfig'
-
-const OrbitField = lazy(() => import('./components/OrbitField'))
 
 type IconName = 'arrow' | 'check' | 'spark' | 'shield' | 'layers' | 'chart' | 'calendar' | 'wallet' | 'lab' | 'box' | 'message' | 'menu' | 'close' | 'whatsapp'
 
@@ -176,7 +175,7 @@ function App() {
               <a className="about-map-link" href="https://www.google.com/maps/search/?api=1&query=TibaSmart+Solutions+Limited+Nairobi+Kenya" target="_blank" rel="noreferrer">Find TibaSmart Solutions on Google Maps ↗</a>
               <a className="text-link" href="mailto:info@tibasmart.co.ke?subject=Talk%20to%20a%20TibaSmart%20expert">Talk to an expert <Icon name="arrow" /></a>
             </div>
-            <div className="orbit-wrap"><Suspense fallback={<div className="orbit-loading" aria-label="Loading customer network visualization" />}><OrbitField uploadedLogos={uploadedLogos} orbitSpeed={siteSettings.orbitSpeed} /></Suspense></div>
+            <div className="orbit-wrap"><OrbitField uploadedLogos={uploadedLogos} orbitSpeed={siteSettings.orbitSpeed} /></div>
           </div>
         </section>
 
@@ -201,10 +200,11 @@ function App() {
               <a className="button button-light" href="#modules">Explore every module <Icon name="arrow" /></a>
             </div>
             <div className="product-video-shell">
-              <video className="product-video" autoPlay loop muted playsInline preload="auto" poster="/assets/tiba-hmis-poster.jpg" aria-label="TibaSmart HMIS product demonstration" onLoadedMetadata={(event) => { event.currentTarget.playbackRate = 1.35 }}>
-                <source src="/assets/tiba-hmis-module-ad.mp4" type="video/mp4" />
-                Your browser does not support the TibaSmart HMIS product video. <a href="/assets/tiba-hmis-module-ad.mp4">Download the video</a>.
-              </video>
+              <ProductVideoPlayer
+                poster="/assets/tiba-hmis-poster.jpg"
+                src="/assets/tiba-hmis-module-ad.mp4"
+                caption="EMR · Care · Diagnostics · Pharmacy · Finance & eTIMS"
+              />
             </div>
           </div>
         </section>

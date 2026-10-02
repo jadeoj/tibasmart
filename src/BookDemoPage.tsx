@@ -1,4 +1,5 @@
 import { FormEvent, useState } from 'react'
+import ProductVideoPlayer from './components/ProductVideoPlayer'
 
 export default function BookDemoPage() {
   const [submitted, setSubmitted] = useState(false)
@@ -52,8 +53,14 @@ export default function BookDemoPage() {
         </section>
         <aside className="demo-video-panel" aria-label="TibaSmart HMIS product tour">
           <div className="demo-video-intro"><span className="demo-video-label">TIBA SMART HMIS</span><span className="demo-video-status"><i /> Product tour</span></div>
-          <div className="demo-video-frame"><video autoPlay loop muted playsInline preload="auto" poster="/assets/tiba-hmis-poster.jpg" aria-label="TibaSmart HMIS product demonstration" onLoadedMetadata={(event) => { event.currentTarget.playbackRate = 1.35 }}><source src="/assets/tiba-hmis-module-ad.mp4" type="video/mp4" /></video><span className="demo-video-caption">Your whole operation, connected.</span></div>
-          <div className="demo-video-footer"><span>Care · Diagnostics · Pharmacy · Finance</span></div>
+          <div className="demo-video-frame">
+            <ProductVideoPlayer
+              poster="/assets/tiba-hmis-poster.jpg"
+              src="/assets/tiba-hmis-module-ad.mp4"
+              caption="Your whole operation, connected."
+            />
+          </div>
+          <div className="demo-video-footer"><span>Care · Diagnostics · Pharmacy · Finance &amp; eTIMS</span></div>
         </aside>
       </div>
     </main>

@@ -20,6 +20,8 @@ type OrbitFieldProps = { uploadedLogos?: OrbitLogo[]; orbitSpeed?: number }
 
 function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) {
   const mountRef = useRef<HTMLDivElement>(null)
+  const speedRef = useRef(orbitSpeed)
+  speedRef.current = orbitSpeed
 
   useEffect(() => {
     const mount = mountRef.current
@@ -41,7 +43,7 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
     mount.appendChild(labels.domElement)
 
     const orbit = new THREE.Group()
-    orbit.rotation.x = -0.16
+    orbit.rotation.x = -0.22
     orbit.rotation.z = -0.08
     scene.add(orbit)
 
@@ -67,8 +69,38 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
     orbit.add(new THREE.Points(starGeometry, new THREE.PointsMaterial({ color: 0x8ecbff, size: 0.028, transparent: true, opacity: 0.75 })))
 
     let paused = false
+    let isDragging = false
+    let previousPointer = { x: 0, y: 0 }
     let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const setPaused = (next: boolean) => { paused = next }
+
+    const onPointerDown = (event: PointerEvent) => {
+      // Allow drag on background or canvas
+      if ((event.target as HTMLElement).closest('.orbit-card')) return
+      isDragging = true
+      previousPointer = { x: event.clientX, y: event.clientY }
+      mount.style.cursor = 'grabbing'
+    }
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (!isDragging) return
+      const deltaX = event.clientX - previousPointer.x
+      const deltaY = event.clientY - previousPointer.y
+      previousPointer = { x: event.clientX, y: event.clientY }
+      orbit.rotation.y += deltaX * 0.008
+      orbit.rotation.x = Math.max(-0.9, Math.min(0.9, orbit.rotation.x + deltaY * 0.006))
+    }
+
+    const onPointerUp = () => {
+      if (isDragging) {
+        isDragging = false
+        mount.style.cursor = ''
+      }
+    }
+
+    mount.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('pointermove', onPointerMove)
+    window.addEventListener('pointerup', onPointerUp)
 
     const orbitLogos = [...clientLogos, ...uploadedLogos]
     const cardWidth = Math.max(96, Math.min(126, 1120 / orbitLogos.length))
@@ -122,9 +154,10 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
     const animate = (time: number) => {
       const delta = Math.min((time - lastTime) / 1000, 0.05)
       lastTime = time
-      if (!paused && !reducedMotion) {
-        orbit.rotation.y += delta * orbitSpeed
-        orbit.rotation.z += delta * 0.018
+      if (!paused && !reducedMotion && !isDragging) {
+        orbit.rotation.y += delta * speedRef.current
+        orbit.rotation.x = -0.22 + Math.sin(time * 0.0006) * 0.06
+        orbit.rotation.z = -0.08 + Math.cos(time * 0.0004) * 0.04
       }
       webgl.render(scene, camera)
       labels.render(scene, camera)
@@ -136,14 +169,21 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       cancelAnimationFrame(frame)
       resizeObserver.disconnect()
       mediaQuery.removeEventListener('change', onMotionPreferenceChange)
+      mount.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', onPointerUp)
       ring.geometry.dispose()
       ringMaterial.dispose()
       innerRing.geometry.dispose()
       ;(innerRing.material as THREE.Material).dispose()
       starGeometry.dispose()
       webgl.dispose()
-      mount.removeChild(webgl.domElement)
-      mount.removeChild(labels.domElement)
+      if (mount.contains(webgl.domElement)) {
+        mount.removeChild(webgl.domElement)
+      }
+      if (mount.contains(labels.domElement)) {
+        mount.removeChild(labels.domElement)
+      }
     }
   }, [uploadedLogos])
 

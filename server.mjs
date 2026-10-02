@@ -1,4 +1,5 @@
 import http from 'node:http'
+import fsSync from 'node:fs'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -8,6 +9,7 @@ const port = Number(process.env.PORT || 3000)
 const dataDir = process.env.DATA_DIR || path.join(root, 'data')
 const configPath = path.join(dataDir, 'site-config.json')
 const distDir = path.join(root, 'dist')
+const publicDir = path.join(root, 'public')
 const defaultConfig = { logos: [], settings: { assistantEnabled: true, orbitSpeed: 0.24 } }
 
 async function readConfig() {
@@ -26,21 +28,90 @@ function sendJson(response, status, body) {
   response.end(JSON.stringify(body))
 }
 
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
+  '.svg': 'image/svg+xml',
+}
+
 async function serveStatic(request, response) {
   const pathname = decodeURIComponent(new URL(request.url, `http://${request.headers.host}`).pathname)
   const relative = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '')
-  const candidate = path.resolve(distDir, relative)
-  const safePath = candidate.startsWith(`${distDir}${path.sep}`) ? candidate : path.join(distDir, 'index.html')
+  
+  // Look in dist first, then public directory as fallback
+  let candidate = path.resolve(distDir, relative)
+  let foundFile = false
   try {
-    const file = await fs.readFile(safePath)
-    const extension = path.extname(safePath)
-    const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.mp4': 'video/mp4' }
-    response.writeHead(200, { 'Content-Type': types[extension] || 'application/octet-stream', 'Cache-Control': extension === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable' })
-    response.end(file)
-  } catch {
-    const fallback = await fs.readFile(path.join(distDir, 'index.html'))
+    const s = await fs.stat(candidate)
+    if (s.isFile()) foundFile = true
+  } catch {}
+
+  if (!foundFile) {
+    const publicCandidate = path.resolve(publicDir, relative)
+    try {
+      const s = await fs.stat(publicCandidate)
+      if (s.isFile()) {
+        candidate = publicCandidate
+        foundFile = true
+      }
+    } catch {}
+  }
+
+  if (foundFile) {
+    try {
+      const stat = await fs.stat(candidate)
+      const extension = path.extname(candidate)
+      const contentType = MIME_TYPES[extension] || 'application/octet-stream'
+
+      // Video range request streaming (HTTP 206) for smooth playback in Safari & Chrome
+      const range = request.headers.range
+      if (range && extension === '.mp4') {
+        const parts = range.replace(/bytes=/, '').split('-')
+        const start = parseInt(parts[0], 10)
+        const end = parts[1] ? parseInt(parts[1], 10) : stat.size - 1
+        const chunkSize = (end - start) + 1
+        const stream = fsSync.createReadStream(candidate, { start, end })
+
+        response.writeHead(206, {
+          'Content-Range': `bytes ${start}-${end}/${stat.size}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunkSize,
+          'Content-Type': contentType,
+        })
+        stream.pipe(response)
+        return
+      }
+
+      response.writeHead(200, {
+        'Content-Type': contentType,
+        'Content-Length': stat.size,
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': extension === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable',
+      })
+      const stream = fsSync.createReadStream(candidate)
+      stream.pipe(response)
+      return
+    } catch (e) {
+      console.error('Error streaming static file:', e)
+    }
+  }
+
+  // SPA fallback to index.html
+  try {
+    const fallbackPath = path.join(distDir, 'index.html')
+    const fallback = await fs.readFile(fallbackPath)
     response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' })
     response.end(fallback)
+  } catch {
+    response.writeHead(404, { 'Content-Type': 'text/plain' })
+    response.end('Not Found')
   }
 }
 

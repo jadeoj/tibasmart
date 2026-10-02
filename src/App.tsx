@@ -92,6 +92,12 @@ function App() {
         }
       })
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 })
+    const unfoldTargets = document.querySelectorAll<HTMLElement>('.section-heading, .platform-story, .workflow-panel, .stat, .product-demo-copy, .product-video-shell, .module-card, .integration-layout, .integration-chip, .security-copy, .security-visual, .cta-card, .about-healthcare-image, .orbit-wrap')
+    unfoldTargets.forEach((element, index) => {
+      element.classList.add('scroll-unfold')
+      element.style.setProperty('--unfold-delay', `${Math.min(index % 5, 4) * 70}ms`)
+      revealObserver.observe(element)
+    })
     document.querySelectorAll('.motion-reveal').forEach((element) => revealObserver.observe(element))
 
     return () => {

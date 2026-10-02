@@ -71,10 +71,13 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
     const setPaused = (next: boolean) => { paused = next }
 
     const orbitLogos = [...clientLogos, ...uploadedLogos]
+    const cardWidth = Math.max(96, Math.min(126, 1120 / orbitLogos.length))
+    const cardHeight = Math.max(58, Math.min(70, cardWidth * 0.52))
     orbitLogos.forEach((client, index) => {
       const angle = (index / orbitLogos.length) * Math.PI * 2
       const node = new THREE.Group()
-      node.position.set(Math.cos(angle) * 4.15, Math.sin(angle) * 2.05, Math.sin(angle) * 1.75)
+      const stagger = index % 2 === 0 ? 0.13 : -0.13
+      node.position.set(Math.cos(angle) * 4.55, Math.sin(angle) * 2.35 + stagger, Math.sin(angle) * 1.95)
       orbit.add(node)
 
       const halo = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), new THREE.MeshBasicMaterial({ color: client.tone === 'mint' ? 0xb7f8dc : 0x5fb3ff, transparent: true, opacity: 0.9 }))
@@ -83,6 +86,8 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       const element = document.createElement('button')
       element.type = 'button'
       element.className = `orbit-card orbit-card-${client.tone}${client.uploaded ? ' orbit-card-uploaded' : ''}`
+      element.style.width = `${cardWidth}px`
+      element.style.height = `${cardHeight}px`
       element.setAttribute('aria-label', `${client.name} client logo`)
       element.title = client.name
       element.innerHTML = `<span class="orbit-logo-frame"><img src="${client.src}" alt="${client.name} logo" loading="lazy" /></span>`

@@ -1,36 +1,42 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
-import AdminPage from './AdminPage'
 import BookDemoPage from './BookDemoPage'
 import './styles.css'
 
-const configuredOrigin = import.meta.env.VITE_SITE_URL?.trim().replace(/\/$/, '')
-if (configuredOrigin) {
-  const canonical = document.createElement('link')
-  canonical.rel = 'canonical'
-  canonical.href = `${configuredOrigin}/`
-  document.head.appendChild(canonical)
-
-  const ogUrl = document.createElement('meta')
-  ogUrl.setAttribute('property', 'og:url')
-  ogUrl.content = `${configuredOrigin}/`
-  document.head.appendChild(ogUrl)
+function NotFoundPage() {
+  return (
+    <main className="initial-content">
+      <p className="eyebrow">TibaSmart Solutions Limited</p>
+      <h1>Page not found</h1>
+      <p>This address isn’t available.</p>
+      <a className="button button-primary" href="/">Return to website <span aria-hidden="true">↗</span></a>
+    </main>
+  )
 }
+
+const currentPath = window.location.pathname.replace(/\/+$/, '') || '/'
+const configuredOrigin = import.meta.env.VITE_SITE_URL?.trim().replace(/\/+$/, '') || window.location.origin
+
+const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]') ?? document.createElement('link')
+canonical.rel = 'canonical'
+canonical.href = `${configuredOrigin}${currentPath === '/' ? '/' : currentPath}`
+if (!canonical.isConnected) document.head.appendChild(canonical)
+
+const ogUrl = document.querySelector<HTMLMetaElement>('meta[property="og:url"]') ?? document.createElement('meta')
+ogUrl.setAttribute('property', 'og:url')
+ogUrl.content = canonical.href
+if (!ogUrl.isConnected) document.head.appendChild(ogUrl)
 
 document.documentElement.classList.add('js-ready')
 
-const currentPath = window.location.pathname.replace(/\/$/, '')
-const Page = currentPath === '/admin' ? AdminPage : currentPath === '/book-demo' ? BookDemoPage : App
-
-if (window.location.pathname.replace(/\/$/, '') === '/admin') {
-  document.title = 'TibaSmart Admin — Client Logos & Site Settings'
-  const robots = document.querySelector('meta[name="robots"]')
-  robots?.setAttribute('content', 'noindex,nofollow,noarchive')
-}
+const Page = currentPath === '/' ? App : currentPath === '/book-demo' ? BookDemoPage : NotFoundPage
 
 if (currentPath === '/book-demo') {
   document.title = 'Book a TibaSmart Demo — Healthcare Operations'
+} else if (currentPath !== '/') {
+  document.title = 'Page not found — TibaSmart Solutions'
+  document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex,nofollow,noarchive')
 }
 
 createRoot(document.getElementById('root')!).render(

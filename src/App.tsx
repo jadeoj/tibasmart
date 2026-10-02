@@ -1,9 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import Assistant from './components/Assistant'
-import OrbitField, { OrbitLogo } from './components/OrbitField'
+import OrbitField from './components/OrbitField'
 import ProductVideoPlayer from './components/ProductVideoPlayer'
-import { readSiteSettings } from './lib/siteSettings'
-import { fetchSharedConfig } from './lib/sharedConfig'
 
 type IconName = 'arrow' | 'check' | 'spark' | 'shield' | 'layers' | 'chart' | 'calendar' | 'wallet' | 'lab' | 'box' | 'message' | 'menu' | 'close' | 'whatsapp'
 
@@ -50,26 +48,8 @@ function App() {
   const [headerScrolled, setHeaderScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('about')
   const [assistantOpen, setAssistantOpen] = useState(false)
-  const [siteSettings, setSiteSettings] = useState(readSiteSettings)
-  const [uploadedLogos, setUploadedLogos] = useState<OrbitLogo[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('tibasmart-uploaded-logos') ?? '[]') as OrbitLogo[]
-    } catch {
-      return []
-    }
-  })
 
   const closeMobileNav = () => setMobileNavOpen(false)
-
-  useEffect(() => {
-    fetchSharedConfig().then((config) => {
-      if (!config) return
-      setSiteSettings(config.settings)
-      setUploadedLogos(config.logos)
-      localStorage.setItem('tibasmart-uploaded-logos', JSON.stringify(config.logos))
-      localStorage.setItem('tibasmart-site-settings', JSON.stringify(config.settings))
-    })
-  }, [])
 
   useEffect(() => {
     const onScroll = () => setHeaderScrolled(window.scrollY > 24)
@@ -175,7 +155,7 @@ function App() {
               <a className="about-map-link" href="https://www.google.com/maps/search/?api=1&query=TibaSmart+Solutions+Limited+Nairobi+Kenya" target="_blank" rel="noreferrer">Find TibaSmart Solutions on Google Maps ↗</a>
               <a className="text-link" href="mailto:info@tibasmart.co.ke?subject=Talk%20to%20a%20TibaSmart%20expert">Talk to an expert <Icon name="arrow" /></a>
             </div>
-            <div className="orbit-wrap"><OrbitField uploadedLogos={uploadedLogos} orbitSpeed={siteSettings.orbitSpeed} /></div>
+            <div className="orbit-wrap"><OrbitField /></div>
           </div>
         </section>
 
@@ -224,8 +204,8 @@ function App() {
         <section className="cta-section section-sand" aria-labelledby="cta-title"><div className="container cta-card"><div className="cta-copy"><p className="eyebrow">Ready when you are</p><h2 id="cta-title">Give your team a clearer way to care.</h2><p>See how TibaSmart can fit the way your facility already works — and where it can help you work better.</p></div><div className="cta-actions"><a className="button button-primary" href="/book-demo">Request a free demo <Icon name="arrow" /></a><a className="contact-note" href="tel:+254715696182">Or call <b>+254 715 696 182</b></a></div></div></section>
       </main>
 
-      {siteSettings.assistantEnabled && assistantOpen && <Assistant onClose={() => setAssistantOpen(false)} />}
-      {siteSettings.assistantEnabled && <button className={`assistant-launcher ${assistantOpen ? 'is-hidden' : ''}`} type="button" onClick={() => setAssistantOpen(true)} aria-label="Open TibaSmart AI assistant"><span className="assistant-launcher-spark">✦</span><span><b>Ask TibaSmart</b><small>AI guide</small></span></button>}
+      {assistantOpen && <Assistant onClose={() => setAssistantOpen(false)} />}
+      <button className={`assistant-launcher ${assistantOpen ? 'is-hidden' : ''}`} type="button" onClick={() => setAssistantOpen(true)} aria-label="Open TibaSmart AI assistant"><span className="assistant-launcher-spark">✦</span><span><b>Ask TibaSmart</b><small>AI guide</small></span></button>
       <footer className="site-footer"><div className="container footer-top"><div className="footer-brand"><a className="brand" href="#top"><img src="/assets/tibasmart-logo.png" alt="TibaSmart Solutions" /></a><p>Healthcare operations, made clearer.</p><div className="footer-socials" aria-label="TibaSmart social profiles"><a href="https://www.facebook.com/people/TibaSmart-limited-Solutions/61575493359410/" target="_blank" rel="noreferrer" aria-label="TibaSmart on Facebook">f</a><a href="https://www.instagram.com/tibasmartsolutions/" target="_blank" rel="noreferrer" aria-label="TibaSmart on Instagram">◎</a><a href="https://www.google.com/maps/search/?api=1&query=TibaSmart+Solutions+Limited+Nairobi+Kenya" target="_blank" rel="noreferrer" aria-label="Find TibaSmart Solutions on Google Maps">⌖</a><a className="footer-whatsapp" href="https://wa.me/254722777069?text=Hello%20TibaSmart%20Solutions%2C%20I%27d%20like%20to%20learn%20more." target="_blank" rel="noreferrer" aria-label="Chat with TibaSmart on WhatsApp"><Icon name="whatsapp" /></a></div></div><div className="footer-links"><div><span>Explore</span><a href="#about">About</a><a href="#platform">Platform</a><a href="#modules">Modules</a><a href="#integrations">Integrations</a></div><div><span>Connect</span><a href="mailto:info@tibasmart.co.ke">info@tibasmart.co.ke</a><a href="tel:+254722777069">+254 722 777 069</a><a href="https://www.google.com/maps/search/?api=1&query=TibaSmart+Solutions+Limited+Nairobi+Kenya" target="_blank" rel="noreferrer">Google Maps ↗</a><span>Mon – Fri · 8:00 – 17:00</span></div></div></div><div className="container footer-bottom"><span>© 2026 TibaSmart Solutions Limited</span><div><a href="#top">Privacy</a><a href="#top">Terms</a><a href="#top">Back to top ↑</a></div></div></footer>
     </div>
   )

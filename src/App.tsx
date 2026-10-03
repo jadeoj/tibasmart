@@ -22,8 +22,8 @@ const modules = [
 ]
 
 const stats = [
-  { value: '35%', label: 'faster appointment scheduling' },
-  { value: '40%', label: 'lower administrative costs' },
+  { value: '85%', label: 'faster appointment scheduling' },
+  { value: '95%', label: 'lower administrative costs' },
   { value: '100%', label: 'paperless workflows' },
 ]
 

@@ -43,8 +43,14 @@ if (currentPath === '/book-demo') {
   document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex,nofollow,noarchive')
 }
 
-createRoot(document.getElementById('root')!).render(
+const rootElement = document.getElementById('root')!
+createRoot(rootElement).render(
   <StrictMode>
     <Page />
   </StrictMode>,
 )
+requestAnimationFrame(() => {
+  rootElement.classList.remove('app-loading')
+  rootElement.classList.add('app-ready')
+  rootElement.removeAttribute('aria-busy')
+})

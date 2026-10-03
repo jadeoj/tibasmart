@@ -576,3 +576,8 @@ h1, h2, h3 { color: inherit; letter-spacing: -.055em; }
 
 .admin-upload-button.is-processing { opacity: .62; cursor: wait; }
 .about-address { max-width: 420px; margin: 22px 0 0; color: var(--muted); font-size: .72rem; line-height: 1.65; }
+
+/* Prevent browser download/selection callouts on orbit logos, including mobile long-press. */
+.orbit-field, .orbit-field * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.orbit-card, .orbit-card img { -webkit-user-drag: none; }
+.orbit-card img { pointer-events: none; }

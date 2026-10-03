@@ -101,7 +101,17 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       mount.style.cursor = ''
     }
 
+    const blockLogoMenu = (event: Event) => {
+      if ((event.target as HTMLElement).closest('.orbit-card')) event.preventDefault()
+    }
+    const blockLogoDrag = (event: DragEvent) => {
+      if ((event.target as HTMLElement).closest('.orbit-card')) event.preventDefault()
+    }
+
     mount.addEventListener('pointerdown', onPointerDown)
+    mount.addEventListener('contextmenu', blockLogoMenu)
+    mount.addEventListener('selectstart', blockLogoMenu)
+    mount.addEventListener('dragstart', blockLogoDrag)
     window.addEventListener('pointermove', onPointerMove)
     window.addEventListener('pointerup', onPointerUp)
     window.addEventListener('pointercancel', onPointerCancel)
@@ -127,7 +137,7 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       element.style.height = `${cardHeight}px`
       element.setAttribute('aria-label', `${client.name} client logo`)
       element.title = client.name
-      element.innerHTML = `<span class="orbit-logo-frame"><img src="${client.src}" alt="${client.name} logo" loading="lazy" /></span>`
+      element.innerHTML = `<span class="orbit-logo-frame"><img src="${client.src}" alt="${client.name} logo" loading="lazy" draggable="false" /></span>`
       const label = new CSS2DObject(element)
       label.position.set(0, 0.24, 0)
       node.add(label)
@@ -170,6 +180,9 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       resizeObserver.disconnect()
       mediaQuery.removeEventListener('change', onMotionPreferenceChange)
       mount.removeEventListener('pointerdown', onPointerDown)
+      mount.removeEventListener('contextmenu', blockLogoMenu)
+      mount.removeEventListener('selectstart', blockLogoMenu)
+      mount.removeEventListener('dragstart', blockLogoDrag)
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerup', onPointerUp)
       window.removeEventListener('pointercancel', onPointerCancel)

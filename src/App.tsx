@@ -25,6 +25,7 @@ const stats = [
   { value: '85%', label: 'faster appointment scheduling' },
   { value: '95%', label: 'lower administrative costs' },
   { value: '100%', label: 'paperless workflows' },
+  { value: '96%', label: 'DHA attestation' },
 ]
 
 const integrations = ['M-Pesa & banking', 'Insurance providers', 'Lab equipment', 'WhatsApp, SMS & email', 'KRA eTIMS']

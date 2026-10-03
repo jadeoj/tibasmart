@@ -575,3 +575,4 @@ h1, h2, h3 { color: inherit; letter-spacing: -.055em; }
 .product-video-player-container { user-select: none; cursor: default; }
 
 .admin-upload-button.is-processing { opacity: .62; cursor: wait; }
+.about-address { max-width: 420px; margin: 22px 0 0; color: var(--muted); font-size: .72rem; line-height: 1.65; }

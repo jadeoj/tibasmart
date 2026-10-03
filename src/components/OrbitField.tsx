@@ -29,7 +29,7 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100)
-    camera.position.set(0, 0, 12)
+    camera.position.set(0, 0, 14)
 
     const webgl = new THREE.WebGLRenderer({ alpha: true, antialias: true })
     webgl.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -48,10 +48,10 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
     scene.add(orbit)
 
     const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x8ecbff, transparent: true, opacity: 0.38 })
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(5.05, 0.012, 10, 128), ringMaterial)
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(4.15, 0.012, 10, 128), ringMaterial)
     orbit.add(ring)
 
-    const innerRing = new THREE.Mesh(new THREE.TorusGeometry(3.05, 0.008, 10, 96), new THREE.MeshBasicMaterial({ color: 0xb7f8dc, transparent: true, opacity: 0.35 }))
+    const innerRing = new THREE.Mesh(new THREE.TorusGeometry(2.55, 0.008, 10, 96), new THREE.MeshBasicMaterial({ color: 0xb7f8dc, transparent: true, opacity: 0.35 }))
     innerRing.rotation.x = Math.PI / 2
     innerRing.rotation.y = 0.2
     orbit.add(innerRing)
@@ -59,7 +59,7 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
     const starGeometry = new THREE.BufferGeometry()
     const starPositions = new Float32Array(24 * 3)
     for (let i = 0; i < 24; i += 1) {
-      const radius = 4.7 + Math.random() * 1.1
+      const radius = 3.85 + Math.random() * 0.65
       const angle = (i / 24) * Math.PI * 2
       starPositions[i * 3] = Math.cos(angle) * radius
       starPositions[i * 3 + 1] = (Math.random() - 0.5) * 3.9
@@ -72,8 +72,6 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
     let isDragging = false
     let previousPointer = { x: 0, y: 0 }
     let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const setPaused = (next: boolean) => { paused = next }
-
     const onPointerDown = (event: PointerEvent) => {
       // Allow drag on background or canvas
       if ((event.target as HTMLElement).closest('.orbit-card')) return
@@ -98,18 +96,25 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       }
     }
 
+    const onPointerCancel = () => {
+      isDragging = false
+      mount.style.cursor = ''
+    }
+
     mount.addEventListener('pointerdown', onPointerDown)
     window.addEventListener('pointermove', onPointerMove)
     window.addEventListener('pointerup', onPointerUp)
+    window.addEventListener('pointercancel', onPointerCancel)
+    window.addEventListener('blur', onPointerCancel)
 
     const orbitLogos = [...clientLogos, ...uploadedLogos]
-    const cardWidth = Math.max(96, Math.min(126, 1120 / orbitLogos.length))
-    const cardHeight = Math.max(58, Math.min(70, cardWidth * 0.52))
+    const cardWidth = Math.max(82, Math.min(104, 920 / orbitLogos.length))
+    const cardHeight = Math.max(50, Math.min(62, cardWidth * 0.54))
     orbitLogos.forEach((client, index) => {
       const angle = (index / orbitLogos.length) * Math.PI * 2
       const node = new THREE.Group()
       const stagger = index % 2 === 0 ? 0.13 : -0.13
-      node.position.set(Math.cos(angle) * 5.15, Math.sin(angle) * 2.7 + stagger, Math.sin(angle) * 2.2)
+      node.position.set(Math.cos(angle) * 4.25, Math.sin(angle) * 2.25 + stagger, Math.sin(angle) * 1.75)
       orbit.add(node)
 
       const halo = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), new THREE.MeshBasicMaterial({ color: client.tone === 'mint' ? 0xb7f8dc : 0x5fb3ff, transparent: true, opacity: 0.9 }))
@@ -123,11 +128,6 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       element.setAttribute('aria-label', `${client.name} client logo`)
       element.title = client.name
       element.innerHTML = `<span class="orbit-logo-frame"><img src="${client.src}" alt="${client.name} logo" loading="lazy" /></span>`
-      element.addEventListener('mouseenter', () => setPaused(true))
-      element.addEventListener('mouseleave', () => setPaused(false))
-      element.addEventListener('focus', () => setPaused(true))
-      element.addEventListener('blur', () => setPaused(false))
-
       const label = new CSS2DObject(element)
       label.position.set(0, 0.24, 0)
       node.add(label)
@@ -172,6 +172,8 @@ function OrbitField({ uploadedLogos = [], orbitSpeed = 0.24 }: OrbitFieldProps) 
       mount.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerup', onPointerUp)
+      window.removeEventListener('pointercancel', onPointerCancel)
+      window.removeEventListener('blur', onPointerCancel)
       ring.geometry.dispose()
       ringMaterial.dispose()
       innerRing.geometry.dispose()

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App'
+import AdminPage from './AdminPage'
 import BookDemoPage from './BookDemoPage'
 import './styles.css'
 
@@ -30,10 +31,13 @@ if (!ogUrl.isConnected) document.head.appendChild(ogUrl)
 
 document.documentElement.classList.add('js-ready')
 
-const Page = currentPath === '/' ? App : currentPath === '/book-demo' ? BookDemoPage : NotFoundPage
+const Page = currentPath === '/' ? App : currentPath === '/book-demo' ? BookDemoPage : currentPath === '/admin' ? AdminPage : NotFoundPage
 
 if (currentPath === '/book-demo') {
   document.title = 'Book a TibaSmart Demo — Healthcare Operations'
+} else if (currentPath === '/admin') {
+  document.title = 'Admin workspace — TibaSmart Solutions'
+  document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex,nofollow,noarchive')
 } else if (currentPath !== '/') {
   document.title = 'Page not found — TibaSmart Solutions'
   document.querySelector('meta[name="robots"]')?.setAttribute('content', 'noindex,nofollow,noarchive')

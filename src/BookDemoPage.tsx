@@ -13,6 +13,13 @@ export default function BookDemoPage() {
     const organization = String(form.get('organization') || '')
     const role = String(form.get('role') || '')
     const message = String(form.get('message') || '')
+    const lead = { id: `lead-${Date.now()}`, name, phone, organization, email, role, message, submittedAt: new Date().toISOString() }
+    try {
+      const existing = JSON.parse(localStorage.getItem('tibasmart-leads') ?? '[]')
+      localStorage.setItem('tibasmart-leads', JSON.stringify([lead, ...existing]))
+    } catch {
+      // Keep the confirmation flow usable if browser storage is unavailable.
+    }
     const body = [
       `Name: ${name}`,
       `Email: ${email}`,

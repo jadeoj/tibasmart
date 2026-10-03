@@ -573,8 +573,5 @@ h1, h2, h3 { color: inherit; letter-spacing: -.055em; }
 /* Silent autoplay product video: no interactive controls or pointer actions. */
 .product-video-element { pointer-events: none; user-select: none; }
 .product-video-player-container { user-select: none; cursor: default; }
-.video-caption-bar { position: absolute; z-index: 2; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 14px 10px; color: rgba(255,255,255,.72); background: linear-gradient(0deg, rgba(4,17,31,.88), rgba(4,17,31,0)); font-size: .55rem; pointer-events: none; }
-.video-caption-bar > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 560px) { .video-caption-bar { padding: 11px 9px 8px; font-size: .48rem; }.video-caption-bar > span:last-child { display: none; } }
 
 .admin-upload-button.is-processing { opacity: .62; cursor: wait; }

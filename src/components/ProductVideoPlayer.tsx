@@ -13,7 +13,6 @@ export default function ProductVideoPlayer({
   poster = '/assets/tiba-hmis-poster.jpg',
   src = '/assets/tiba-hmis-module-ad.mp4',
   autoPlay = true,
-  caption = 'Care · Diagnostics · Pharmacy · Finance & eTIMS',
 }: ProductVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -68,10 +67,6 @@ export default function ProductVideoPlayer({
         draggable={false}
         onContextMenu={(event) => event.preventDefault()}
       />
-      <div className="video-caption-bar" aria-hidden="true">
-        <span className="video-live-pill"><span className="video-pulse-dot" /> AUTOPLAYING</span>
-        <span>{caption}</span>
-      </div>
     </div>
   )
 }

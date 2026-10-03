@@ -31,6 +31,32 @@ function readStorage<T>(key: string, fallback: T): T {
 function writeStorage(key: string, value: unknown) { localStorage.setItem(key, JSON.stringify(value)) }
 function formatDate(value: string) { return new Intl.DateTimeFormat('en-KE', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) }
 
+function normalizeFacilityLogo(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = () => reject(new Error('Could not read the logo'))
+    reader.onload = () => {
+      const image = new Image()
+      image.onerror = () => reject(new Error('Could not decode the logo'))
+      image.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 360
+        canvas.height = 180
+        const context = canvas.getContext('2d')
+        if (!context) { reject(new Error('Logo processing is unavailable')); return }
+        const scale = Math.min((canvas.width - 28) / image.naturalWidth, (canvas.height - 28) / image.naturalHeight)
+        const width = Math.max(1, Math.round(image.naturalWidth * scale))
+        const height = Math.max(1, Math.round(image.naturalHeight * scale))
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        context.drawImage(image, Math.round((canvas.width - width) / 2), Math.round((canvas.height - height) / 2), width, height)
+        resolve(canvas.toDataURL('image/png'))
+      }
+      image.src = String(reader.result)
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 export default function AdminPage() {
   const [settings, setSettings] = useState<SiteSettings>(() => ({ ...defaultSettings, ...readStorage<Partial<SiteSettings>>(SETTINGS_KEY, {}) }))
   const [leads, setLeads] = useState<Lead[]>(() => readStorage<Lead[]>(LEADS_KEY, []))
@@ -39,6 +65,7 @@ export default function AdminPage() {
   const [search, setSearch] = useState('')
   const [notice, setNotice] = useState('')
   const [newLogoName, setNewLogoName] = useState('')
+  const [logoProcessing, setLogoProcessing] = useState(false)
 
   const filteredLeads = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -70,22 +97,26 @@ export default function AdminPage() {
     reader.readAsDataURL(file)
   }
 
-  function handleClientLogoUpload(event: ChangeEvent<HTMLInputElement>) {
+  async function handleClientLogoUpload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { showNotice('Please choose an image file'); return }
     if (file.size > 2 * 1024 * 1024) { showNotice('Logo must be smaller than 2 MB'); return }
-    const reader = new FileReader()
-    reader.onload = () => {
+    setLogoProcessing(true)
+    try {
+      const normalizedSrc = await normalizeFacilityLogo(file)
       const name = newLogoName.trim() || file.name.replace(/\.[^/.]+$/, '')
-      const logo: UploadedLogo = { id: `logo-${Date.now()}`, name, src: String(reader.result), tone: tones[logos.length % tones.length], uploaded: true }
+      const logo: UploadedLogo = { id: `logo-${Date.now()}`, name, src: normalizedSrc, tone: tones[logos.length % tones.length], uploaded: true }
       const updated = [logo, ...logos]
       setLogos(updated)
       writeStorage(LOGOS_KEY, updated)
       setNewLogoName('')
-      showNotice(`${name} added to the client logo orbit`)
+      showNotice(`${name} resized and added to the client logo orbit`)
+    } catch {
+      showNotice('The logo could not be processed — please try another image')
+    } finally {
+      setLogoProcessing(false)
     }
-    reader.readAsDataURL(file)
   }
 
   function deleteLead(id: string) {
@@ -132,7 +163,7 @@ export default function AdminPage() {
 
         {activeView === 'leads' && <section className="admin-panel admin-leads-panel"><div className="admin-panel-heading"><div><p className="eyebrow">Pipeline</p><h2>People interested in TibaSmart</h2></div><button className="admin-danger-button" onClick={clearLeads} disabled={!leads.length}>Clear all</button></div><div className="admin-leads-toolbar"><label className="admin-search"><span>⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by name, organization, or email" /></label><span className="admin-result-count">{filteredLeads.length} {filteredLeads.length === 1 ? 'lead' : 'leads'}</span></div>{filteredLeads.length === 0 ? <div className="admin-empty large">{leads.length ? 'No leads match your search.' : 'No demo requests have been submitted yet.'}</div> : <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>Contact</th><th>Organization</th><th>Role</th><th>Submitted</th><th /></tr></thead><tbody>{filteredLeads.map((lead) => <tr key={lead.id}><td><strong>{lead.name}</strong><span>{lead.email}</span><span>{lead.phone}</span></td><td>{lead.organization}</td><td>{lead.role}</td><td>{formatDate(lead.submittedAt)}</td><td><button className="admin-delete-button" onClick={() => deleteLead(lead.id)} aria-label={`Delete lead from ${lead.name}`}>×</button></td></tr>)}</tbody></table></div>}</section>}
 
-        {activeView === 'settings' && <div className="admin-settings-grid"><form className="admin-panel admin-settings-form" onSubmit={saveSettings}><div className="admin-panel-heading"><div><p className="eyebrow">Brand controls</p><h2>Site identity</h2></div><button className="button button-primary admin-save-button" type="submit">Save changes</button></div><div className="admin-logo-upload"><div className="admin-logo-preview"><img src={settings.logoSrc} alt="Current site logo" /></div><div><strong>Main website logo</strong><p>Use a transparent PNG, JPG, or WEBP under 2 MB.</p><label className="admin-upload-button">Upload new logo<input type="file" accept="image/*" onChange={handleLogoUpload} /></label></div></div><div className="admin-form-fields"><label><span>Brand name</span><input value={settings.brandName} onChange={(event) => setSettings({ ...settings, brandName: event.target.value })} /></label><label><span>Short tagline</span><input value={settings.tagline} onChange={(event) => setSettings({ ...settings, tagline: event.target.value })} /></label><label><span>Contact email</span><input type="email" value={settings.contactEmail} onChange={(event) => setSettings({ ...settings, contactEmail: event.target.value })} /></label><label><span>Primary phone</span><input value={settings.phone} onChange={(event) => setSettings({ ...settings, phone: event.target.value })} /></label><label><span>WhatsApp number</span><input value={settings.whatsapp} onChange={(event) => setSettings({ ...settings, whatsapp: event.target.value })} /></label></div></form><section className="admin-panel admin-client-logos"><div className="admin-panel-heading"><div><p className="eyebrow">Social proof</p><h2>Client logos</h2></div><span className="admin-count-pill">{logos.length} added</span></div><p className="admin-panel-copy">Uploaded logos join the client orbit on the public website.</p><div className="admin-logo-add"><input value={newLogoName} onChange={(event) => setNewLogoName(event.target.value)} placeholder="Client name (optional)" /><label className="admin-upload-button">Choose logo<input type="file" accept="image/*" onChange={handleClientLogoUpload} /></label></div>{logos.length === 0 ? <div className="admin-empty">No additional logos uploaded yet.</div> : <div className="admin-uploaded-list">{logos.map((logo) => <div key={logo.id}><img src={logo.src} alt="" /><span>{logo.name}</span><button onClick={() => { const updated = logos.filter((item) => item.id !== logo.id); setLogos(updated); writeStorage(LOGOS_KEY, updated); showNotice('Client logo removed') }} aria-label={`Remove ${logo.name}`}>×</button></div>)}</div>}</section></div>}
+        {activeView === 'settings' && <div className="admin-settings-grid"><form className="admin-panel admin-settings-form" onSubmit={saveSettings}><div className="admin-panel-heading"><div><p className="eyebrow">Brand controls</p><h2>Site identity</h2></div><button className="button button-primary admin-save-button" type="submit">Save changes</button></div><div className="admin-logo-upload"><div className="admin-logo-preview"><img src={settings.logoSrc} alt="Current site logo" /></div><div><strong>Main website logo</strong><p>Use a transparent PNG, JPG, or WEBP under 2 MB.</p><label className="admin-upload-button">Upload new logo<input type="file" accept="image/*" onChange={handleLogoUpload} /></label></div></div><div className="admin-form-fields"><label><span>Brand name</span><input value={settings.brandName} onChange={(event) => setSettings({ ...settings, brandName: event.target.value })} /></label><label><span>Short tagline</span><input value={settings.tagline} onChange={(event) => setSettings({ ...settings, tagline: event.target.value })} /></label><label><span>Contact email</span><input type="email" value={settings.contactEmail} onChange={(event) => setSettings({ ...settings, contactEmail: event.target.value })} /></label><label><span>Primary phone</span><input value={settings.phone} onChange={(event) => setSettings({ ...settings, phone: event.target.value })} /></label><label><span>WhatsApp number</span><input value={settings.whatsapp} onChange={(event) => setSettings({ ...settings, whatsapp: event.target.value })} /></label></div></form><section className="admin-panel admin-client-logos"><div className="admin-panel-heading"><div><p className="eyebrow">Social proof</p><h2>Client logos</h2></div><span className="admin-count-pill">{logos.length} added</span></div><p className="admin-panel-copy">Uploaded logos are automatically resized to the orbit frame and added to the spinning wheel.</p><div className="admin-logo-add"><input value={newLogoName} onChange={(event) => setNewLogoName(event.target.value)} placeholder="Facility name (optional)" /><label className={`admin-upload-button${logoProcessing ? ' is-processing' : ''}`}>{logoProcessing ? 'Resizing…' : 'Choose facility logo'}<input type="file" accept="image/*" onChange={handleClientLogoUpload} disabled={logoProcessing} /></label></div>{logos.length === 0 ? <div className="admin-empty">No additional logos uploaded yet.</div> : <div className="admin-uploaded-list">{logos.map((logo) => <div key={logo.id}><img src={logo.src} alt="" /><span>{logo.name}</span><button onClick={() => { const updated = logos.filter((item) => item.id !== logo.id); setLogos(updated); writeStorage(LOGOS_KEY, updated); showNotice('Client logo removed') }} aria-label={`Remove ${logo.name}`}>×</button></div>)}</div>}</section></div>}
       </main>
     </div>
   )
